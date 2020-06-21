@@ -25,10 +25,6 @@ public:
         }
         return verticles;
     }
-    int getIndex(const string &name, vector<string> &names)
-    {
-        return find(names.begin(), names.end(), name) - names.begin(); //return the index of the given name
-    }
     int numVerticle()
     {
         return graph.size();
@@ -55,8 +51,9 @@ public:
         int index{};
         for (auto &&it : graph) {
             vector<string> tmp = getPageTo(it.first);
-            for (auto &&ele : tmp) {
-                M[index][getIndex(ele, names)] = 1.0 / getAdjacentSize(ele);
+            for (auto &&str : tmp) {
+                //find the str's index in the M and assign it to 1/d_j
+                M[index][find(names.begin(), names.end(), str) - names.begin()] = 1.0 / getAdjacentSize(str);
             }
             ++index;
         }
