@@ -19,23 +19,15 @@ public:
     }
     vector<string> getAllVerticle()
     {
-        vector<string> ret;
+        vector<string> verticles;
         for (auto &&p : graph) {
-            ret.push_back(p.first);
+            verticles.push_back(p.first);
         }
-        return ret;
+        return verticles;
     }
-    int getIndex(const string &name)
+    int getIndex(const string &name, vector<string> &names)
     {
-        vector<string> tmp = getAllVerticle();
-        int index{};
-        for (auto &&i : tmp) {
-            if (i == name) {
-                return index;
-            }
-            ++index;
-        }
-        return -1;
+        return find(names.begin(), names.end(), name) - names.begin(); //return the index of the given name
     }
     int numVerticle()
     {
@@ -43,13 +35,13 @@ public:
     }
     vector<string> getPageTo(const string &to)
     {
-        vector<string> ret;
+        vector<string> pageTo;
         for (auto &&p : graph) {
             if (find(p.second.begin(), p.second.end(), to) != p.second.end()) {
-                ret.push_back(p.first);
+                pageTo.push_back(p.first);
             }
         }
-        return ret;
+        return pageTo;
     }
     int getAdjacentSize(const string &vertex)
     {
@@ -57,18 +49,18 @@ public:
     }
     void PageRank(int n)
     {
-        int index{};
-        vector<string> name = getAllVerticle();
+        vector<string> names = getAllVerticle();
         vector<vector<double>> M(numVerticle(), vector<double>(numVerticle()));
         vector<double> rank(numVerticle(), 1.0 / numVerticle());
+        int index{};
         for (auto &&it : graph) {
             vector<string> tmp = getPageTo(it.first);
             for (auto &&ele : tmp) {
-                M[index][getIndex(ele)] = 1.0 / getAdjacentSize(ele);
+                M[index][getIndex(ele, names)] = 1.0 / getAdjacentSize(ele);
             }
             ++index;
         }
-        for (int num = 0; num < n-1; ++num) {
+        for (int num = 0; num < n - 1; ++num) {
             auto tmpVec = rank;
             fill(rank.begin(), rank.end(), 0.0);
             for (int i = 0; i < numVerticle(); ++i) {
@@ -77,8 +69,10 @@ public:
                 }
             }
         }
+        index = {}; //re-initialize index to 0
         for (auto &&ele : graph) {
-            cout << ele.first << " " << fixed << setprecision(2) << rank[getIndex(ele.first)] << '\n';
+            cout << ele.first << " " << fixed << setprecision(2) << rank[index] << '\n';
+            ++index;
         }
     }
 };
