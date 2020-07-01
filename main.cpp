@@ -2,6 +2,7 @@
 #include <iomanip>
 #include <iostream>
 #include <map>
+#include <string>
 #include <vector>
 using namespace std;
 
@@ -43,30 +44,30 @@ public:
     {
         return graph[vertex].size();
     }
+    int getIndex(const string &str, vector<string> &vec)
+    {
+        return find(vec.begin(), vec.end(), str) - vec.begin();
+    }
+    double reciprocal(double arg)
+    {
+        return 1.0 / arg;
+    }
     void PageRank(int n)
     {
-        vector<string> names = getAllVerticle();
-        vector<vector<double>> M(numVerticle(), vector<double>(numVerticle()));
-        vector<double> rank(numVerticle(), 1.0 / numVerticle());
-        int index{};
-        for (auto &&it : graph) {
-            vector<string> tmp = getPageTo(it.first);
-            for (auto &&str : tmp) {
-                //find the str's index in the M and assign it to 1/d_j
-                M[index][find(names.begin(), names.end(), str) - names.begin()] = 1.0 / getAdjacentSize(str);
-            }
-            ++index;
-        }
+        auto names = getAllVerticle();
+        vector<double> rank(numVerticle(), reciprocal(numVerticle()));
         for (int num = 0; num < n - 1; ++num) {
             auto tmpVec = rank;
+            auto it = graph.begin();
             fill(rank.begin(), rank.end(), 0.0);
-            for (int i = 0; i < numVerticle(); ++i) {
-                for (int j = 0; j < numVerticle(); ++j) {
-                    rank[i] += M[i][j] * tmpVec[j];
-                }
+            for (auto &&i : rank) {
+                for (auto &&j : getPageTo(it->first)) {
+                    i += tmpVec[getIndex(j, names)] * reciprocal(getAdjacentSize(j));
+                } 
+                ++it;
             }
         }
-        index = {}; //re-initialize index to 0
+        int index = {};
         for (auto &&ele : graph) {
             cout << ele.first << " " << fixed << setprecision(2) << rank[index] << '\n';
             ++index;
@@ -79,7 +80,7 @@ int main()
     string from, to;
     cin >> numLine >> powerIter;
     AdjacencyList adj;
-    for (int i = 0; i < numLine; i++) {
+    for (int i = 0; i < numLine; ++i) {
         cin >> from >> to;
         adj.add(from, to);
     }
