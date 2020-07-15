@@ -18,15 +18,16 @@ public:
             graph[to] = {};
         }
     }
-    vector<string> getAllVerticle()
+    //get all vertices in the map return a vector
+    vector<string> getAllVertices()
     {
-        vector<string> verticles;
+        vector<string> vertices;
         for (auto &&p : graph) {
-            verticles.push_back(p.first);
+            vertices.push_back(p.first);
         }
-        return verticles;
+        return vertices;
     }
-    int numVerticle()
+    int numVertices()
     {
         return graph.size();
     }
@@ -40,6 +41,7 @@ public:
         }
         return pageTo;
     }
+    //get the number of vertices which has a point to the given vertex
     int getAdjacentSize(const string &vertex)
     {
         return graph[vertex].size();
@@ -54,32 +56,30 @@ public:
     }
     void PageRank(int n)
     {
-        auto names = getAllVerticle();
-        vector<double> rank(numVerticle(), reciprocal(numVerticle()));
-        for (int num = 0; num < n - 1; ++num) {
+        vector<string> names = getAllVertices();
+        vector<double> rank(numVertices(), reciprocal(numVertices()));
+        for (; n > 1; --n) {
             auto tmpVec = rank;
-            auto it = graph.begin();
             fill(rank.begin(), rank.end(), 0.0);
-            for (auto &&i : rank) {
-                for (auto &&j : getPageTo(it->first)) {
-                    i += tmpVec[getIndex(j, names)] * reciprocal(getAdjacentSize(j));
-                } 
-                ++it;
+            for (int i = 0; i < numVertices(); ++i) {
+                for (auto &&j : getPageTo(names[i])) {
+                    rank[i] += tmpVec[getIndex(j, names)] * reciprocal(getAdjacentSize(j));
+                }
             }
         }
         int index = {};
+        //print the name and its rank
         for (auto &&ele : graph) {
-            cout << ele.first << " " << fixed << setprecision(2) << rank[index] << '\n';
-            ++index;
+            cout << ele.first << " " << fixed << setprecision(2) << rank[index++] << '\n';
         }
     }
 };
 int main()
 {
-    int numLine, powerIter;
-    string from, to;
-    cin >> numLine >> powerIter;
     AdjacencyList adj;
+    int numLine, powerIter;
+    cin >> numLine >> powerIter;
+    string from, to;
     for (int i = 0; i < numLine; ++i) {
         cin >> from >> to;
         adj.add(from, to);
